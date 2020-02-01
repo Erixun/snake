@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Page Title</title>
+  <link rel="stylesheet" type="text/css" href="snakestyle.css">
+</head>
+<body>
+  <h2>A Game of Snake</h2>
+  <center>
+    <button>Start</button>
+    <div id="container">
+
+    </div>
+  </center>
+  
+  <script>
+    button = document.querySelector("button");
+    button.addEventListener("click", startGame );
+
+    container = document.querySelector("#container");
+    const clientWidth = container.clientWidth ;
+    container.style.height = "auto"; //clientWidth + "px";
+
+    const dimension = 51;
+
+    const divHeight = clientWidth/dimension + "px";
+    
+
+    // create dimension x dimension grid
+    let snakeCoordsArray; // = ["","","","",""];
+    function createGrid() {
+      container.innerHTML = "";
+      snakeCoordsArray = ["","","","",""]
+      for(let i=1; i<(dimension+1); i++) {
+        for(let j=1; j<(dimension+1); j++) {
+          div = document.createElement("div")
+          div.style.height = divHeight;
+          // create snake body:
+          if( (i==24 ||i==25 || i==26 || i==27 || i==28) && j==26) {
+            div.setAttribute("class", "snake");
+            // set snake-body-coords
+            snakeCoordsArray.push(j + "," + i);
+            snakeCoordsArray.shift(); 
+          } else div.setAttribute("class", "empty");
+          div.setAttribute("xy-coord", j + "," + i);
+          
+          //placeFood();
+          container.appendChild(div);
+        }
+      }
+    }
+
+    //function place food...
+    function placeFood() {
+      setTimeout(function() {
+        let emptyDivArray = Array.from(document.querySelectorAll("div.empty"));
+        let ix;
+
+        if( Array.from(document.querySelectorAll("div.food")).length < 40 ) {
+          ix = Math.floor(Math.random()*2596)
+          emptyDivArray[ix].classList.add("food");
+          placeFood();
+        }
+      }, 2000)
+      // let emptyDivArray = Array.from(document.querySelectorAll("div.empty"));
+      // let ix;
+      // for(let i = 0; i<20; i++) {
+      //   ix = Math.floor(Math.random()*2596)
+      //   emptyDivArray[ix].classList.add("food");
+      //}
+    }
+
+    // get direction input
+    let direction = "w";
+    window.addEventListener("keydown", function(e) {
+      console.log(e.key)
+      if(e.key == "w" || e.key == "a" || e.key == "s" || e.key == "d") {
+        console.log(e.key + "," + direction);
+        if( (direction === "w" && e.key === "s") || ( direction === "s" && e.key === "w") ) {
+          return;
+        } else if( (direction === "a" && e.key === "d") || ( direction === "d" && e.key === "a") ) {
+          return;
+        } else direction = e.key;
+      }
+    })
+
+    let x; let y;
+    function getNextMove() {
+      if(direction == "w") {
+        x = +snakeCoordsArray[0].split(",")[0];
+        if(x == 0) { x = dimension; } else if(x==(dimension+1)) { x = 1; }; //in case of edge
+        y = +snakeCoordsArray[0].split(",")[1] - 1;
+        if(y == 0) { y = dimension; } else if(y==(dimension+1)) { y = 1; };
+        infrontCoords = x + "," + y;
+      } else if(direction == "a") {
+        x = +snakeCoordsArray[0].split(",")[0] - 1;
+        if(x == 0) { x = dimension; } else if(x==(dimension+1)) { x = 1; };
+        y = +snakeCoordsArray[0].split(",")[1];
+        if(y == 0) { y = dimension; } else if(y==(dimension+1)) { y = 1; };
+        infrontCoords = x + "," + y;
+      } else if(direction == "s") {
+        x = +snakeCoordsArray[0].split(",")[0];
+        if(x == 0) { x = dimension; } else if(x==(dimension+1)) { x = 1; };
+        y = +snakeCoordsArray[0].split(",")[1] + 1;
+        if(y == 0) { y = dimension; } else if(y==(dimension+1)) { y = 1; };
+        infrontCoords = x + "," + y;
+      } else {
+        x = +snakeCoordsArray[0].split(",")[0] + 1;
+        if(x == 0) { x = dimension; } else if(x==(dimension+1)) { x = 1; };
+        y = +snakeCoordsArray[0].split(",")[1];
+        if(y == 0) { y = dimension; } else if(y==(dimension+1)) { y = 1; };
+        infrontCoords = x + "," + y;
+      }
+    }
+
+    createGrid();
+    function startGame() {
+      createGrid();
+      placeFood();
+      startMoving();
+    }
+    function startMoving() {
+      
+      setTimeout(function () {
+
+        getNextMove();
+        
+        if( document.querySelector('[xy-coord=\"' + x + "," + y +'\"]').classList[1] !== "snake" ) {
+          startMoving();
+        } else { alert("Game Over"); }// createGrid(); }
+
+        document.querySelector('[xy-coord=\"' + infrontCoords +'\"]').classList.add("snake");
+        snakeCoordsArray.unshift(infrontCoords);
+        
+        document.querySelector('[xy-coord=\"' + snakeCoordsArray[snakeCoordsArray.length-1] +'\"]').classList.remove("snake");
+        
+        if ( document.querySelector('[xy-coord=\"' + x + "," + y +'\"]').classList[1] !== "food" ) {
+          snakeCoordsArray.pop();
+        } else {
+          document.querySelector('[xy-coord=\"' + x + "," + y +'\"]').classList.remove("food");
+        }
+
+      }, 100)
+    }
+
+
+
+  </script>
+</body>
+</html>

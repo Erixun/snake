@@ -1,0 +1,28 @@
+
+h2 {
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+button {
+    margin: 5px;
+}
+
+div#container {
+    width: 40%;
+    border: 1px solid black;
+    display: grid;
+    grid-template-columns: repeat(51, 1fr);
+}
+div.empty {
+    transition-duration:0.05s;
+    background-color:white;
+}
+div.snake {
+    transition-duration: 0.05s;
+    background-color: black;
+}
+div.food {
+    transition-duration: 0.05s;
+    background-color: black;;
+}
